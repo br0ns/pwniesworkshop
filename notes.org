@@ -1,0 +1,37 @@
+* Dag 0
+  How to use linux?
+
+* Dag 1
+  Tidsforbrug: 3-4 timer
+
+** Ændriner
+   Gennemgå funktionskald, stackframes og evt. GDB på dag 1. Gentag på dag 2,
+   men spar tid da folk allerede har set det.
+
+   Pas mikrolegetime om at slå forskellige instruktioner i manualen op.
+
+* Dag 2
+  Tidsforbrug: 6+ timer
+
+** Ændringer
+   Ingen. Spar forhåbentlig tid ved at snakke om stack frames og funktionskald
+   på dag 1
+
+   Vis eksempel på kommenteret assemblerkode, og tegning af stackframe.
+
+* Dag 3
+  Tidsforbrug: 4-5 timer
+
+** Ændringer
+   Opfordr folk til at ændre i deres bindshell så den kun binder stdin. På den
+   måde kan folk skrive ting ud på den projekter som viser output fra serveren.
+
+   Ekstraopgave: Flyt tællevariablen op over bufferen alá pcs.
+
+   Ekstraekstraopgave: Firewall så hårdt at forbindelsen skal genbruges.
+
+* Dag 4
+  ROP
+
+* Dag 5
+  Fuzzing?
