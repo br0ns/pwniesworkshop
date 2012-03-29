@@ -1,0 +1,3 @@
+pwnies@localhost:~ $ gdb --args ./filnavn arg1 arg2
+start
+disp/30i $eip
