@@ -1,0 +1,469 @@
+% xcolor=table is because it seems that beamer uses the xcolor package in a
+% strange way and thus don't accept us giving arguments to the package.
+\documentclass[slidestop,compress,mathserif, xcolor=table]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{listings}
+
+\lstset{
+    language=c,                        % choose the language of the code
+    basicstyle=\ttfamily\footnotesize, % the size of the fonts that are used for the
+    keywordstyle=,
+    numbers=left,                      % where to put the line-numbers
+    numberstyle=\footnotesize,         % the size of the fonts that are used for the
+    numbersep=5pt,                     % how far the line-numbers are from the code
+    backgroundcolor=\color{white},     % choose the background color. You must add
+    showspaces=false,                  % show spaces adding particular underscores
+    showstringspaces=false,            % underline spaces within strings
+    showtabs=false,                    % show tabs within strings adding particular
+    frame=single,                      % adds a frame around the code
+    breaklines=true,                   % sets automatic line breaking
+    breakatwhitespace=false            % sets if automatic breaks should only happen at
+}
+
+% \usepackage{mdwtab}
+% \usepackage{mathenv}
+% \usepackage{amsfonts}
+% \usepackage{amsmath}
+% \usepackage{amssymb}
+% \usepackage{amsthm}
+
+\usepackage{semantic}
+\renewcommand{\ttdefault}{txtt} % Bedre typewriter font
+
+% Use the NAT theme in uk (also possible in DK)
+\usetheme[nat,uk, footstyle=low, TPrawlrimage=pony.jpg]{Frederiksberg}
+
+\definecolor{mypink}{RGB}{255,200,220}
+\setbeamercolor{background canvas}{bg=mypink}
+%\setbeamercolor{structure}{fg=blue}
+
+% Make overlay sweet nice by having different transparancy depending on how
+% "far" ahead the overlay is. AWSOME!!
+%\setbeamercovered{highly dynamic}
+% possible to shift back, so they are just invisible untill they should overlay
+% \setbeamercovered{invisible}
+
+% Extend figures into either left or right margin
+% Ex: \begin{narrow}{-1in}{0in} .. \end{narrow} will place 1in into left margin
+\newenvironment{narrow}[2]{%
+  \begin{list}{}{%
+  \setlength{\topsep}{0pt}%
+  \setlength{\leftmargin}{#1}%
+  \setlength{\rightmargin}{#2}%
+  \setlength{\listparindent}{\parindent}%
+  \setlength{\itemindent}{\parindent}%
+  \setlength{\parsep}{\parskip}}%
+\item[]}{\end{list}}
+
+
+
+\usepackage{tikz}
+\usetikzlibrary{calc,shapes,arrows}
+% below is for use of backgrounds (foregrounds are not used so they are not
+% added to this specification).
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+
+
+\usepackage{subfigure}
+
+
+% Write a short text to have that shown in the footer of slides other than the
+% title slide.
+\title[]{Lær at lave shellcode}
+% A possible subslide.
+%\subtitle{Regular-expression based bit coding}
+
+
+\author[br0ns \and iDolf Hatler \and TM]
+       {br0ns \and iDolf Hatler \and TM}
+
+% Only write DIKU in the footer of slides (except the title slide).
+\institute[DIKU]{Datalogisk institut, Københavns universitet}
+
+% Remove the date stamp from the footer of slides (except title slide) by giving
+% it no short "text"
+\date[]{\today}
+
+\begin{document}
+
+\frame[plain]{\titlepage}
+
+\begin{frame}[c]
+    \frametitle{Disclaimer}
+
+    SPØRG FOR FANDEN HVIS DET GÅR FOR STÆRKT!
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Hvad er målet?}
+
+    \begin{itemize}
+        \pause\item Kontrol over datamaten.
+        \pause\item Eksekvering af vores kode.
+        \pause\item Shell.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{\texttt{exploitable.c}}
+
+    \lstinputlisting{exploitable.c}
+\end{frame}
+
+\begin{frame}[c]
+    \begin{center}
+      \Huge Demo
+    \end{center}
+  \end{frame}
+
+\begin{frame}[c]
+    \frametitle{Hvad nu?}
+
+    \begin{itemize}
+        \pause\item Den hoppede til adresse \texttt{0x41414141}.
+        \pause\item Kan vi bruge det?
+        \pause\item Hvordan kommer vi videre?
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Lynkursus i maskinarkitektur}
+  \begin{itemize}
+    \pause\item Hardware
+    \pause\item Instruktionssættet
+    \pause\item Styresystemet
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Hardware}
+    \begin{itemize}
+        \pause\item CPU
+        \pause\item Hukommelse
+        \pause\item IO
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{CPU}
+    \begin{itemize}
+        \pause
+      \item Har registre der bruges til midlertidige beregninger (\texttt{EAX,
+          EBX, EBP, ESP, ...})
+
+        \pause
+      \item Har en instruktionspeger (\texttt{EIP})
+
+        \pause
+      \item Kan regne og gøre mange smarte ting (cache, hukommelsesmaskering,
+        etc.)
+    \end{itemize}\vskip15pt
+
+    \pause Algoritme:
+    \begin{enumerate}
+        \pause\item Læs en instruktion fra hukommelsen og flyt \texttt{EIP}
+        \pause\item Gør hvad instruktionen siger
+        \pause\item Gå til punkt 1
+    \end{enumerate} \vskip15pt
+
+    \pause Eksempler: \texttt{mov, add, jmp, call, push}
+
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Og en pony}
+    \includegraphics[width=0.8\textwidth]{pony2}
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Hukommelse}
+    \pause Hukommelse på X86 er kompliceret.\vskip10pt
+
+    \pause Long story short:
+    \begin{itemize}
+
+      \pause
+    \item Fra jeres synsvinkel består hukommelsen af adresser fra
+      \texttt{0x00000000} til \texttt{0xffffffff}.
+
+      \pause
+    \item Hver adresse indeholder 1 byte, men man tilgår normalt 4 bytes af
+      gangen (så \texttt{0x1234} er \texttt{0x1234-0x1237}).
+
+      \pause
+    \item X86 er little endian (den ``mindst betydende byte'' bliver gemt
+      først).  Tallet \texttt{0xDECAFBAD} består af de fire bytes \texttt{0xAD},
+      \texttt{0xFB}, \texttt{0xCA} og \texttt{0xDE} \textit{i den rækkefølge}.
+
+      \pause
+    \item Hukommelsen er inddelt i forskellige områder. Hvis man prøver at tilgå
+      noget udenfor et af disse områder (\textit{segmenter}) får man en
+      segmenteringsfejl.
+
+      \pause
+    \item Adresserne er lokale for dit program. Flere processer kan bruge
+      \texttt{0x1234} uden at tilgå det samme stykke fysiske hukommelse (som
+      endda kan være swap på en disk).
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Hukommelse - fortsat}
+
+    Relevante områder i hukommelsen er:
+    \begin{itemize}
+        \pause\item Programområdet (\texttt{EIP})
+        \pause\item Statisk allokerede variable (BSS)
+        \pause\item Dataområdet
+        \pause\item Hobområdet (dynamisk lager)
+        \pause\item Stakområdet (\texttt{ESP/EBP})
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{IO}
+
+    \begin{itemize}
+        \pause\item Det findes
+        \pause\item Du er ligeglad
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Instruktionssættet}
+
+    Generelt er X86 et clusterfuck, men her er nogle nemme:
+    \begin{itemize}
+        \pause\item Flyt og regn på data (\texttt{mov, add, xor, shl})
+        \pause\item Hop (\texttt{jmp, jne, call, ret})
+        \pause\item Stakoperationer (\texttt{push, pop})
+        \pause\item \texttt{nop}
+    \end{itemize}\vskip15pt
+
+    \pause Og et par funky:
+    \begin{itemize}
+        \pause
+      \item \texttt{bsf} (Bit Scan Forward)
+
+        \pause
+      \item \texttt{aesenc} (``Perform One Round of an AES Encryption Flow'')
+
+        \pause
+      \item \texttt{f2xm1} (Udregn $2^x-1$ i et floating point -register)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Legetime 1}
+
+    {\scriptsize
+
+    \pause Mål: kald \texttt{/bin/sh} \vskip5pt
+
+    \pause C: \texttt{execve(char *filename, char *argv[], char
+      *envp[])}\vskip5pt
+
+    \pause Aassembler: Sæt \texttt{eax = 11, ebx = filename, ecx = argv, edx =
+      envp}. Kald derefter på styresystemet med \texttt{int 0x80}.\vskip5pt
+
+    \pause Nyttige instruktioner:
+
+    \begin{tabular}{|c|p{6cm}|}
+      \hline
+      \texttt{[BITS 32]} & Skal stå på først linje for få nasm til at bruge
+      32-bit \\\hline
+
+      \texttt{global \_start} & Gør entry-point synligt for linkeren\\\hline
+
+      \texttt{\_start:} & Entry-point i programmet \\\hline
+
+      \texttt{mov r1, n} & Flytter tallet $n$ til register \texttt{r1} \\\hline
+
+      \texttt{mov r1, r2} & Flytter indholdet af register \texttt{r2} til
+      register \texttt{r1} \\\hline
+
+      \texttt{mov r1, label} & Flytter adressen af \texttt{label} til
+      \texttt{r1} \\\hline
+
+      \texttt{int 0x80} & Kald styresystemsfunktioner \\\hline
+
+      \texttt{str1: db "pony",0} & Gemmer den nul-terminerede tekst ``pony'' i
+      hukommelsen med \texttt{str1} som peger til den \\\hline
+
+      \texttt{array1: dd l1,l2,l3,0} & Gemmer et array af pointers
+      (\texttt{l1,l2,l3}) i hukommelsen med \texttt{array1} som
+      peger\\\hline
+
+    \end{tabular} \vskip5pt
+
+    \pause Kør med:\\
+    \texttt{nasm -f elf evil.asm; ld -melf\_i386 -o evil evil.o; ./evil}
+
+    }
+\end{frame}
+
+\begin{frame}[c]
+    \begin{center}
+      \Huge Demo
+    \end{center}
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Styresystemet}
+
+    \begin{itemize}
+        \pause
+      \item Du snakker med styresystemet ved hjælp af \texttt{int 0x80}
+
+        \pause
+      \item \texttt{EAX} er funktionsnummeret (11 = \texttt{execve}). Vælg andre
+        tal for andre
+        funktioner\footnote<3->{\url{http://asm.sourceforge.net/syscall.html}}.
+
+        \pause
+      \item \texttt{EBX}, \texttt{ECX}, \texttt{EDX}, \texttt{ESI}, \texttt{EDI}
+        er argumenter (i den rækkefølge).
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Og en pony mere}
+    \includegraphics[width=0.5\textwidth]{pony1}
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Back on track 1}
+
+    \begin{itemize}
+      \pause\item Vi har nu oversat vores shellcode som et selvstændigt
+      program, der kan køres alene.
+
+      \pause\item Problem: Vi bruger labels.
+
+      \pause\item Man kan ikke bruge (den her slags) labels i shellcode.
+
+      \pause\item Men hvordan får vi fat i vores data uden labels?
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Et muligt svar: Brug stakken}
+
+    \pause Idé: Du har en peger til stakken (\texttt{ESP}) og medmindre der er
+    gået noget galt har du lov til at gemme data der. Det gør du ved at
+    \texttt{push}'e:\vskip8pt
+
+    \begin{itemize}
+        \pause\item Afhænger af størrelsen, indsæt selv joke
+
+        \pause\item \texttt{push byte 0x68         ; pusher
+          0x0000\textcolor{red}{00}68}
+
+        \pause\item \texttt{push word 0x732f       ; pusher 0x732f}
+
+        \pause\item \texttt{push dword 0x6e69622f  ; pusher 0x6e69622f}
+    \end{itemize} \vskip8pt
+
+    \pause Kortere:
+    \begin{itemize}
+        \item \texttt{push 0x68732f6e}
+        \item \texttt{push 0x69622f2f}
+    \end{itemize} \vskip8pt
+
+    \pause Og med en smart syntax:
+    \begin{itemize}
+        \item \texttt{push \`{}n/sh\`{}}
+        \item \texttt{push \`{}//bi\`{}}
+    \end{itemize}
+
+    Se desuden \texttt{man ascii}.
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Legetime 2}
+
+    \pause Mål: Lav din shellcode om, så den ikke har nogen labels. \vskip5pt
+
+    \pause Nyttige instruktioner:
+
+    \begin{tabular}{|c|p{6cm}|}
+    \hline
+    \texttt{[BITS 32]} & Skal stå på først linje for få nasm til at bruge 32-bit
+    \\\hline
+
+    \texttt{push n} & Pusher tallet $n$ til stakken som 4 bytes \\\hline
+
+    \texttt{push word n} & Pusher tallet $n$ til stakken som 2 bytes\\\hline
+
+    \texttt{push \`{}abcd\`{}} & Pusher de 4 bytes \texttt{a, b, c} og
+    \texttt{d} til stakken \\\hline
+
+    \texttt{mov r1, r2} & Flytter indholdet af register \texttt{r2} til register
+    \texttt{r1} \\\hline
+
+    \texttt{mov r1, esp} & Flytter stakpegeren til register \texttt{r1} \\\hline
+
+    \texttt{int 0x80} & Udfører systemkald \\\hline
+    \end{tabular} \vskip5pt
+
+    \pause Kør med: \\\texttt{nasm -f bin evil.asm; ../demo evil}
+\end{frame}
+
+\begin{frame}[c]
+    \begin{center}
+      \Huge Demo
+    \end{center}
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Back on track 2}
+
+    \begin{itemize}
+      \pause\item Nu har vi shellcode som ikke behøver en bestemt kontekst for
+      at virke.
+
+      \pause\item Den kan smides ind i et andet program og gøre hvad vi har
+      lyst.
+
+      \pause\item Problem: Mange steder hvor vi har mulighed for at lirke
+      shellcode ind kræver at den ikke indeholder NULL-tegn.
+
+        \pause\item Hvordan fjerner vi dem?
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Trickz til at undgå NULL-bytes}
+
+    \pause Ingen NULL-bytes i koden? \vskip10pt
+
+    \pause Ofte intet problem, men hvad hvis et register skal være tomt (eller
+    næsten tomt)? \vskip10pt
+
+    \pause Der findes masser af tricks der kan bruges i forskellige situationer:
+
+    \pause\lstinputlisting{example.asm}
+
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Legetime 3}
+
+    Lav jeres shellcode om til ikke at indeholde NULL-tegn.
+\end{frame}
+
+\begin{frame}[c]
+    \begin{center}
+      \Huge Demo
+    \end{center}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Spørgsmål?}
+\end{frame}
+
+\end{document}
