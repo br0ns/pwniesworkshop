@@ -1,0 +1,1 @@
+FOO="`./egg.py huge-shellcode`" ../demo egg-hunter

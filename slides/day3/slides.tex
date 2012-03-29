@@ -1,0 +1,372 @@
+% xcolor=table is because it seems that beamer uses the xcolor package in a
+% strange way and thus don't accept us giving arguments to the package.
+\documentclass[slidestop,compress,mathserif, xcolor=table]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\lstset{
+    language=c,                        % choose the language of the code
+    basicstyle=\ttfamily\footnotesize, % the size of the fonts that are used for the
+    keywordstyle=,
+    numbers=left,                      % where to put the line-numbers
+    numberstyle=\footnotesize,         % the size of the fonts that are used for the
+    numbersep=5pt,                     % how far the line-numbers are from the code
+    backgroundcolor=\color{white},     % choose the background color. You must add
+    showspaces=false,                  % show spaces adding particular underscores
+    showstringspaces=false,            % underline spaces within strings
+    showtabs=false,                    % show tabs within strings adding particular
+    frame=single,                      % adds a frame around the code
+    breaklines=true,                   % sets automatic line breaking
+    breakatwhitespace=false            % sets if automatic breaks should only happen at
+}
+
+% \usepackage{mdwtab}
+% \usepackage{mathenv}
+% \usepackage{amsfonts}
+% \usepackage{amsmath}
+% \usepackage{amssymb}
+% \usepackage{amsthm}
+
+\usepackage{semantic}
+\renewcommand{\ttdefault}{txtt} % Bedre typewriter font
+
+% Use the NAT theme in uk (also possible in DK)
+\usetheme[nat,uk, footstyle=low, TPrawlrimage=pwnie.png]{Frederiksberg}
+
+\definecolor{mypink}{RGB}{255,200,220}
+\setbeamercolor{background canvas}{bg=mypink}
+%\setbeamercolor{structure}{fg=blue}
+
+% Make overlay sweet nice by having different transparancy depending on how
+% "far" ahead the overlay is. AWSOME!!
+%\setbeamercovered{highly dynamic}
+% possible to shift back, so they are just invisible untill they should overlay
+% \setbeamercovered{invisible}
+
+% Extend figures into either left or right margin
+% Ex: \begin{narrow}{-1in}{0in} .. \end{narrow} will place 1in into left margin
+\newenvironment{narrow}[2]{%
+  \begin{list}{}{%
+  \setlength{\topsep}{0pt}%
+  \setlength{\leftmargin}{#1}%
+  \setlength{\rightmargin}{#2}%
+  \setlength{\listparindent}{\parindent}%
+  \setlength{\itemindent}{\parindent}%
+  \setlength{\parsep}{\parskip}}%
+\item[]}{\end{list}}
+
+
+
+\usepackage{tikz}
+\usetikzlibrary{calc,shapes,arrows}
+% below is for use of backgrounds (foregrounds are not used so they are not
+% added to this specification).
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+
+
+\usepackage{subfigure}
+
+
+% Write a short text to have that shown in the footer of slides other than the
+% title slide.
+\title[]{Advanced shellcode}
+% A possible subslide.
+%\subtitle{Regular-expression based bit coding}
+
+
+\author[br0ns \and iDolf Hatler]
+       {br0ns \and iDolf Hatler}
+
+% Only write DIKU in the footer of slides (except the title slide).
+\institute[DIKU]{Datalogisk institut, Københavns universitet}
+
+% Remove the date stamp from the footer of slides (except title slide) by giving
+% it no short "text"
+\date[]{\today}
+
+\begin{document}
+
+\frame[plain]{\titlepage}
+
+\begin{frame}[c]
+    \frametitle{Aftenens Program}
+
+    \begin{itemize}
+      \pause
+        \item \texttt{nasm} og \texttt{netcat}
+      \pause
+        \item Trampoliner (``Hvor er jeg?'')
+      \pause
+        \item NOP-slisker (``Er koden mon her?'')
+      \pause
+        \item Bindshell og connect-back (``Hvad med over netværket?'')
+      \pause
+        \item Egg hunters (``Hvor \emph{er} min kode?'')
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Koder, kend din assembler}
+    \url{http://www.nasm.us/docs.php} \\
+
+    \begin{itemize}
+        \pause\item \texttt{\%define STD\_IN 0 ; std\_in file handle}
+        \pause\item \texttt{\%include "my-defines.asm"}
+        \pause\item \texttt{nasm nizzle.asm -I defines/linux/}
+        \pause
+          \begin{itemize}
+          \item GOTCHA: afsluttende skråstreg er \textit{vigtig!}
+          \end{itemize}
+        \pause\item \texttt{nasm nizzle.asm -D DEBUG}
+        \pause\lstinputlisting{ifdef.asm}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Netcat: The TCP/IP Swiss army knife}
+    \begin{itemize}
+      \item \url{http://nc110.sourceforge.net}
+      \item \url{http://www.admon.org/netcat-tcpip-swiss-army-knife}
+      \item \texttt{man nc}
+    \end{itemize}
+
+    \pause \textbf{OBS:} Der er to udgaver af netcat. netcat-traditional og
+    netcat-openbsd. De har forskellige parametre. Eksemplerne bruger
+    traditional.
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Mikrolegetime: Netcat}
+
+    \lstset{language=bash, numbers=none}
+    \pause
+    Forbind til vært på port 23:
+    \lstinputlisting{nc-connect.sh}
+    \pause
+    Lyt på port 1337:
+    \lstinputlisting{nc-listen.sh}
+    \pause
+    Send data:
+    \lstinputlisting{nc-send.sh}
+
+    Prøv at sende data til hinanden.
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Hvor er jeg?}
+
+    \pause\lstinputlisting{move-eip.asm}
+
+    \pause Det kan man ikke! \vskip8pt
+
+    \pause Men man kan bruge en trampolin!
+
+    \pause\lstinputlisting{trampolin.asm}
+
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Legetime 1 - skriv din egen trampolin som udskriver ``Hello
+    World!''}
+
+  \pause
+
+    {\scriptsize
+      Prøv på at bruge defines (+ includes?). \vskip8pt
+
+      C: \texttt{write(int fd, const void *buf, size\_t counter);
+        exit(0)} \vskip8pt
+
+      Assembler: \texttt{eax = 4, ebx = 1 (stdout), ecx = buf, edx =
+        count, int 0x80, eax = 1, ebx = 0, int 0x80} \vskip8pt
+
+      \begin{tabular}{|c|p{6cm}|}
+        \hline
+        \texttt{[BITS 32]} & Skal stå på først linje for få nasm til at bruge
+        32-bit \\\hline
+
+        \texttt{mov $a$, $b$} & Flytter $b$ til $a$, hvor $a$ og $b$ er
+        registre, hukommelse eller heltal. \\\hline
+
+        \texttt{push r} & Pusher register \texttt{r} \\\hline
+
+        \texttt{pop r} & Pop register \texttt{r} \\\hline
+
+        \texttt{label:} & Laver en label man kan hoppe til (og ikke bruge til
+        meget andet her) \\\hline
+
+        \texttt{jmp label}/\texttt{call label} & Hopper/caller en label \\\hline
+
+        \texttt{str1: db "pony",0} & Gemmer den nul-terminerede tekst ``pony''
+        i hukommelsen med \texttt{str1} som peger til den \\\hline
+
+      \end{tabular} \vskip8pt
+
+      Kør med: \\\texttt{nasm -f bin evil.asm; ../demo evil}
+    }
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{NOP-slisker}
+  Hvis du ved omtrent hvor din kode er (og kan tåle at lave et par tusinde
+  forsøg).
+  \lstinputlisting[numbers=none]{nopsled.asm}
+  \lstinputlisting[language=python]{nopsled.py}
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Hvad med over netværk?}
+
+    \begin{itemize}
+    % \item Internet sockets.
+    \item Connect-back.
+    \item Bindshell.
+    \end{itemize}
+
+    % \pause
+    % \vskip10pt
+
+    % \textbf{Mikrolegetime:} Leg lidt med bindshell og connect-back.
+    % \texttt{connect-back.asm, bindshell.asm, bindshell.c}
+
+\end{frame}
+
+% Jeg tror ikke vi behøver noget om sockets her -- det forvirrer mere end det
+% forklarer
+
+% \begin{frame}[c]
+%   \frametitle{Internet sockets}
+%   \begin{itemize}
+%     \pause
+%   \item Styresytemet implementerer en TCP/IP-stak.
+
+%     \pause
+%   \item En socket er kendetegnet ved dens
+%     \begin{enumerate}
+%     \item Lokale port og IP-adresse
+%     \item Fjerne port og IP-adresse
+%     \item
+%     \end{enumerate}
+%   \end{itemize}
+% \end{frame}
+
+\begin{frame}[c]
+  \frametitle{Connect-back}
+  Fremgangsmåde:
+  \begin{enumerate}
+  \item<+-> Åbn en port lokalt og lyt på den
+    \lstinputlisting[numbers=none]{nc-listen.sh}
+  \item<+-> Kør dit sploit. Exploitet kører en connect-back.
+  \item<+-> Connect-backen åbner en forbindelse til den port du lytter på, og
+    binder derefter den åbne socket til en shell.
+  \item<+-> ...
+  \item<+-> Profit!
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Bindshell}
+  Fremgangsmåde:
+  \begin{enumerate}
+  \item<+-> Kør dit sploit. Exploitet kører en bindshell.
+  \item<+-> Bindshellen åbner en port og venter på at nogen forbinder.
+  \item<+-> Forbind.
+    \lstinputlisting[numbers=none]{nc-connect-bindshell.sh}
+  \item<+-> Bindshellen modtager forbindelsen, og binder (deraf ``bind'') den
+    åbne socket til en shell.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Firewalls}
+  Hvad sker der hvis målet ligger bag en firewall? \vskip25pt
+  \begin{description}
+  \item<+->[Bindshell] Firewallen vil næsten stensikkert blokkere den indgående
+    forbindelse fra dig (medmindre du lytter på 1119 eller 3724).
+  \item<+->[Connect-back] Det kan være firewallen også filtrerer udgående
+    forbindelser, så hvis du har mulighed for det, er det bedst at lytte på
+    f.eks. port 80.
+  \end{description}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Mikrolegetime: connect-back og bindshell}
+
+  \pause
+  Bindshell:
+  {\scriptsize
+    \begin{enumerate}
+  \pause
+    \item Læs (eller ændr -- husk at køre nasm) portnummeret i
+      \texttt{bindshell.asm}
+  \pause
+    \item \texttt{../demo bindshell} (Kaldet hænger)
+  \pause
+    \item Åbn en ny terminal og forbind tilbage:
+      \texttt{nc localhost [port]}
+    \end{enumerate}
+  }
+
+
+  \pause
+  Connect-back:
+  {\scriptsize
+    \begin{enumerate}
+  \pause
+    \item Læs (eller ændr -- husk at køre nasm) portnummeret i
+      \texttt{connect-back.asm}. Hvis du vil forbinde tilbage til en anden
+      maskine end din egen skal du også ændre IP-adressen.
+  \pause
+    \item (Terminal A) Lyt på den valgte port: \texttt{nc -l [port]}
+  \pause
+    \item (Terminal B) \texttt{../demo connect-back}
+  \pause
+    \item Nu er terminal A forbundet til en shell.
+    \end{enumerate}
+  }
+
+  \pause
+  \vskip15pt
+  Prøv også at forbinde til hinanden (hvis I tør).
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Legetime 2 - hack den her server}
+
+    På min maskine kører \texttt{server} på port 30001. Hack den!
+
+\end{frame}
+
+\begin{frame}[c]
+    \frametitle{Egg hunters}
+
+    Hvis det er meget begrænset hvilken kode du kan køre, kan du måske bruge en
+    egg hunter. Den leder efter ``den rigtige shellcode'' i hukommelsen.
+
+    \vskip15pt
+
+    \pause
+    \lstinputlisting{egg-hunter.asm}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Mikrolegetime: egg hunter}
+
+  Brug \texttt{egg-hunter} til at køre \texttt{huge-shellcode}.
+
+  \vskip15pt
+
+  Hvordan kan du få \texttt{huge-shellcode} ind i programmets hukommelse?
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Bam!}
+  \lstinputlisting{egg-hunter-bam.sh}
+\end{frame}
+
+\end{document}
