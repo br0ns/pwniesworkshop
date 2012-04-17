@@ -1,6 +1,6 @@
 GCC=gcc -m32 -O -z execstack -fno-stack-protector -fno-builtin
 
-all: demo server hello-trampoline huge-shellcode connect-back bindshell \
+all: server hello-trampoline huge-shellcode connect-back bindshell \
   c-bindshell egg-hunter
 
 server: server.c
