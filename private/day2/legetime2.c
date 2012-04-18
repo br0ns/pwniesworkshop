@@ -1,28 +1,27 @@
 #include <stdio.h>
 #include <string.h>
 
-char* my_strncpy(char *dst, char *src, int n) {
-    int k;
+#define BUFFERSIZE 128
 
-    for(k = 0; k < n && src[k]; k++) {
-        dst[k] = src[k];
+void execute_bin_sh() {
+    execve("/bin/sh", NULL, NULL);
+}
+
+void log_string(int debug, char *str) {
+    char localbuffer[BUFFERSIZE];
+
+    strcpy(localbuffer, str);
+
+    if(debug)
+        printf("%s\n", localbuffer);
+}
+
+int main(int argc, char **argv) {
+    if(argc != 2) {
+        printf("Usage: %s [string]\n", argv[0]);
+        return -1;
     }
 
-    if(k<n)
-        dst[k] = '\0';
-
-    return dst;
+    log_string(0, argv[1]);
 }
 
-
-int main() {
-    char buffer1[20];
-    char *buffer2 = "testtest";
-
-    memset(buffer1, 'A', 20);
-    buffer1[19] = '\0';
-
-    my_strncpy(buffer1, buffer2, 8);
-
-    printf("%s\n", buffer1);
-}

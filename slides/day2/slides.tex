@@ -187,31 +187,39 @@
 \end{frame}
 
 \begin{frame}[c]
+    \frametitle{Legetime1}
+
+    \pause
+    {\footnotesize
+      Legetime 1: 
+        Disasemble legetime1:
+        \begin{itemize}
+            \item Undersøg hvor mange argumenter programmet tager
+            \item Find og print argumenterne til main
+            \item Hvilke argumenter bliver givet til de forskellige funktioner
+            \item Hvad gør de forskellige funktioner.\\
+            Hint: man printf
+            \item Hvad gør programmet
+        \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
     \frametitle{Stackoverflow}
     \pause
     \lstinputlisting{foo2.c}
 \end{frame}
 
+
 \begin{frame}[c]
-    \frametitle{Legetime resten af aftenen}
 
-    \pause
-    {\footnotesize
-      \begin{itemize}
-      \item Legetime 1: Læs og forstå funktionen \texttt{fact} og
-        \texttt{fact\_helper} - meget gerne ved at steppe igennem dem.
-
-      \item Legetime 2: Læs og forstå funktionen \texttt{my\_strncpy}, som gør
-        det samme som \texttt{strncpy(3)}.
-
-      \item Legetime 3: Find et stack overflow i funktionen \texttt{log\_string}
+      \item Legetime 2: Find et stack overflow i funktionen \texttt{log\_string}
         og udnyt det. Det vil være en klar fordel at læse og forstå hvad
         funktionen gør. Der findes en smart funktion som du gerne vil overskrive
         returadressen med - du finder den funktion ved at køre kommandoen
-        \texttt{readelf -s legetime3 | grep FUNC}.
+        \texttt{readelf -s legetime2 | grep FUNC}.
 
-      \item Legetime 4: \texttt{legetime4} er næsten identisk med
-        \texttt{legetime3}. Den smarte funktion fra før er fjernet, til gengæld
+      \item Legetime 3: \texttt{legetime4} er næsten identisk med
+        \texttt{legetime2}. Den smarte funktion fra før er fjernet, til gengæld
         får du mulighed for at finde din shellcode frem.
 
       \item Ekstraopgaver: Løs så mange baner af IO på Smash the stack som
