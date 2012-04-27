@@ -3,9 +3,8 @@
 
 #define BUFFERSIZE 128
 
-void execute_bin_sh() {
-    execve("/bin/sh", NULL, NULL);
-}
+char hostname[BUFFERSIZE];
+
 
 void log_string(int debug, char *str) {
     char localbuffer[BUFFERSIZE];
@@ -13,15 +12,21 @@ void log_string(int debug, char *str) {
     strcpy(localbuffer, str);
 
     if(debug)
-        printf("%s\n", localbuffer);
+        printf("%s: %s\n", hostname, localbuffer);
+}
+
+void save_hostname(char *host) {
+    memset(hostname, 0, BUFFERSIZE);
+    strncpy(hostname, host, BUFFERSIZE-1);
 }
 
 int main(int argc, char **argv) {
-    if(argc != 2) {
-        printf("Usage: %s [string]\n", argv[0]);
+    if(argc != 3) {
+        printf("Usage: %s [hostname] [string]\n", argv[0]);
         return -1;
     }
 
-    log_string(0, argv[1]);
+    save_hostname(argv[1]);
+    log_string(0, argv[2]);
 }
 

@@ -1,14 +1,14 @@
 #include <stdio.h>
 
-int fact_helper(int n, int acc) {
+int helper(int n, int acc) {
     if(n <= 1)
         return acc;
 
-    return fact_helper(n-1, acc*n);
+    return helper(n-1, acc*n);
 }
 
-int fact(int n) {
-    return fact_helper(n, 1);
+int anon(int n) {
+    return helper(n, 1);
 }
 
 int main(int argc, char **argv) {
@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
 
     int n = atoi(argv[1]);
     printf("Calculating %d!\n", n);
-    printf("%d! = %d\n", n, fact(n));
+    printf("%d! = %d\n", n, anon(n));
 
     return 0;
 }
