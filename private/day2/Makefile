@@ -5,7 +5,7 @@ all:
 	$(GCC) -o legetime1 legetime1.c
 	$(GCC) -o legetime2 legetime2.c
 	$(GCC) -o legetime3 legetime3.c
-	$(GCC) -o legetime4 legetime4.c
+	#$(GCC) -o legetime4 legetime4.c
 	nasm e-penis.asm
 
 clean:
